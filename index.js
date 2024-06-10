@@ -20,7 +20,7 @@ app.use("/api/login", login);
 app.use("/api/validate", validate);
 // app.use("/api/accounts", accounts);
 app.use("/api/history", history);
-// app.use("/api/license-key", licenseKey);
+app.use("/api/license-key", licenseKey);
 
 // connection
 const port = process.env.PORT || 9001;

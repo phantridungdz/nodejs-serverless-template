@@ -3,7 +3,7 @@ const { supabase } = require("../utils/supabase");
 const limitPerRecord = 10;
 const pagePerRecord = 0;
 
-const getHistoryData = async (req, res) => {
+const getLicenseData = async (req, res) => {
   const filterValue = req.body;
   const db = supabase();
   console.log("filterValue", filterValue);
@@ -12,19 +12,19 @@ const getHistoryData = async (req, res) => {
   let limit = filterValue?.limit || limitPerRecord;
 
   let dataPromise = db
-    .from("history")
+    .from("license-key")
     .select("*")
     .order("created_at", { ascending: false });
-  let countPromise = db.from("history").select("count");
+  let countPromise = db.from("license-key").select("count");
 
-  if (filterValue?.searchByAccount) {
+  if (filterValue?.searchByPcName) {
     dataPromise = dataPromise.like(
       "account",
-      `%${filterValue.searchByAccount}%`
+      `%${filterValue.searchByPcName}%`
     );
     countPromise = countPromise.like(
       "account",
-      `%${filterValue.searchByAccount}%`
+      `%${filterValue.searchByPcName}%`
     );
   }
   if (filterValue?.startDate) {
@@ -58,4 +58,4 @@ const getHistoryData = async (req, res) => {
   });
 };
 
-module.exports = { getHistoryData };
+module.exports = { getLicenseData };
