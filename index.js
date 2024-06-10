@@ -1,10 +1,14 @@
+// Import packages
 const express = require("express");
+const home = require("./routes/home");
+
+// Middlewares
 const app = express();
-const product = require("./api/product");
+app.use(express.json());
 
-app.use(express.json({ extended: false }));
+// Routes
+app.use("/home", home);
 
-app.use("/api/product", product);
-
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Server is running in port ${PORT}`));
+// connection
+const port = process.env.PORT || 9001;
+app.listen(port, () => console.log(`Listening to port ${port}`));
