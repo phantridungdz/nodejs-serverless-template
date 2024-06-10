@@ -7,9 +7,11 @@ const accounts = require("./routes/accounts");
 const history = require("./routes/history");
 const licenseKey = require("./routes/license-key");
 const validate = require("./routes/validate");
+var cors = require('cors')
 
 // Middlewares
 const app = express();
+app.use(cors())
 app.use(express.json());
 
 // Routes
