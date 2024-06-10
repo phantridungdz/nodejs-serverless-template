@@ -13,9 +13,9 @@ app.use(express.json());
 
 // Routes
 app.use("/", home);
-// app.use("/api/login", login);
+app.use("/api/login", login);
 // app.use("/api/accounts", accounts);
-// app.use("/api/history", history);
+app.use("/api/history", history);
 // app.use("/api/license-key", licenseKey);
 
 // connection
