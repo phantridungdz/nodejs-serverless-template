@@ -7,6 +7,8 @@ const accounts = require("./routes/accounts");
 const history = require("./routes/history");
 const licenseKey = require("./routes/license-key");
 const validate = require("./routes/validate");
+const targetUrl = require("./routes/targetUrl");
+
 var cors = require('cors')
 
 // Middlewares
@@ -18,7 +20,8 @@ app.use(express.json());
 app.use("/", home);
 app.use("/api/login", login);
 app.use("/api/validate", validate);
-// app.use("/api/accounts", accounts);
+app.use("/api/accounts", accounts);
+app.use("/api/target-url", targetUrl);
 app.use("/api/history", history);
 app.use("/api/license-key", licenseKey);
 

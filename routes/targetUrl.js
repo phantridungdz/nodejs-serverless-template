@@ -1,8 +1,8 @@
 const express = require("express");
 const { checkAuth } = require("../utils/middleware");
-const { getAccountsData } = require("../controller/accounts");
+const { getTargetUrlData } = require("../controller/targetUrl");
 const router = express.Router();
 
-router.post("/", checkAuth, getAccountsData);
+router.post("/", checkAuth, getTargetUrlData);
 
 module.exports = router;
