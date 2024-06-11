@@ -15,7 +15,7 @@ router.get("/", async function (req, res) {
     const { data, error } = await supabase().auth.getUser(token);
     console.log("data", data);
     console.log("error", error);
-    if (error.status === 403) {
+    if (error?.status === 403) {
       return res.status(401).json({
         error: "Token Expired",
       });
