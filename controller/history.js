@@ -1,3 +1,4 @@
+const moment = require("moment");
 const { supabase } = require("../utils/supabase");
 
 const limitPerRecord = 10;
@@ -58,4 +59,101 @@ const getHistoryData = async (req, res) => {
   });
 };
 
-module.exports = { getHistoryData };
+const getThisWeekData = async () => {
+  const startDateThisWeek = moment().startOf("week").toDate();
+  const endDateThisWeek = moment().endOf("week").toDate();
+  //convert moment to Date
+  const db = supabase();
+  let dataPromise = db.rpc("get_range_history_money", {
+    start_date: startDateThisWeek,
+    end_date: endDateThisWeek,
+  });
+
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  console.log("error", error);
+  return data;
+};
+
+const getLastWeekData = async () => {
+  const startDateLastWeek = moment()
+    .subtract(1, "week")
+    .startOf("week")
+    .toDate();
+  const endDateLastWeek = moment().subtract(1, "week").endOf("week").toDate();
+  //convert moment to Date
+  const db = supabase();
+  let dataPromise = db.rpc("get_range_history_money", {
+    start_date: startDateLastWeek,
+    end_date: endDateLastWeek,
+  });
+
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  console.log("error", error);
+  return data;
+};
+
+const getThisMonthData = async () => {
+  const startDateThisMonth = moment().startOf("month").toDate();
+  const endDateThisMonth = moment().endOf("month").toDate();
+  //convert moment to Date
+  const db = supabase();
+  let dataPromise = db.rpc("get_range_history_money", {
+    start_date: startDateThisMonth,
+    end_date: endDateThisMonth,
+  });
+
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  console.log("error", error);
+  return data;
+}
+
+const getLastMonthData = async () => {
+  const startDateLastMonth = moment().subtract(1, "month").startOf("month").toDate();
+  const endDateLastMonth = moment().subtract(1, "month").endOf("month").toDate();
+  //convert moment to Date
+  const db = supabase();
+  let dataPromise = db.rpc("get_range_history_money", {
+    start_date: startDateLastMonth,
+    end_date: endDateLastMonth,
+  });
+
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  console.log("error", error);
+  return data;
+}
+
+const getWeekAnalytics = async (req, res) => {
+  const thisWeekData = await getThisWeekData();
+  const lastWeekData = await getLastWeekData();
+
+  const percentage = ((thisWeekData - lastWeekData) / lastWeekData) * 100;
+  console.log("percentage", percentage);
+  return res.status(200).json({
+    thisWeekData,
+    lastWeekData,
+    percentage,
+  });
+};
+
+const getMonthAnalytics = async (req, res) => {
+  const thisMonthData = await getThisMonthData();
+  const lastMonthData = await getLastMonthData();
+
+  const percentage = ((thisMonthData - lastMonthData) / lastMonthData) * 100;
+  console.log("percentage", percentage);
+  return res.status(200).json({
+    thisMonthData,
+    lastMonthData,
+    percentage,
+  });
+};
+
+module.exports = {
+  getHistoryData,
+  getWeekAnalytics,
+  getMonthAnalytics
+};
