@@ -1,8 +1,11 @@
 const express = require("express");
 const { checkAuth } = require("../utils/middleware");
-const { getLicenseData } = require("../controller/license-key");
+const { getLicenseData, updateLicenseData, createLicenseData } = require("../controller/license-key");
 const router = express.Router();
 
 router.post("/", checkAuth, getLicenseData);
+router.put("/:id", checkAuth, updateLicenseData);
+router.post("/create", checkAuth, createLicenseData);
+
 
 module.exports = router;

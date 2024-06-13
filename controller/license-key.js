@@ -3,6 +3,61 @@ const { supabase } = require("../utils/supabase");
 const limitPerRecord = 10;
 const pagePerRecord = 0;
 
+//create yup schema
+const yup = require("yup");
+const licenseKeySchema = yup.object().shape({
+  pc_name: yup.string().notRequired(),
+  cpu: yup
+    .object()
+    .shape({
+      manufacturer: yup.string().notRequired(),
+      brand: yup.string().notRequired(),
+      vendor: yup.string().notRequired(),
+      family: yup.string().notRequired(),
+      model: yup.string().notRequired(),
+      stepping: yup.string().notRequired(),
+      revision: yup.string().notRequired(),
+      voltage: yup.string().notRequired(),
+      speed: yup.number().notRequired(),
+      speedMin: yup.number().notRequired(),
+      speedMax: yup.number().notRequired(),
+      governor: yup.string().notRequired(),
+      cores: yup.number().notRequired(),
+      physicalCores: yup.number().notRequired(),
+      performanceCores: yup.number().notRequired(),
+      efficiencyCores: yup.number().notRequired(),
+      processors: yup.number().notRequired(),
+      socket: yup.string().notRequired(),
+      flags: yup.string().notRequired(),
+      virtualization: yup.boolean().notRequired(),
+      cache: yup
+        .object()
+        .shape({
+          l1d: yup.number().notRequired(),
+          l1i: yup.number().notRequired(),
+          l2: yup.number().notRequired(),
+          l3: yup.number().notRequired(),
+        })
+        .notRequired(),
+    })
+    .notRequired(),
+  system: yup
+    .object()
+    .shape({
+      manufacturer: yup.string().notRequired(),
+      model: yup.string().notRequired(),
+      version: yup.string().notRequired(),
+      serial: yup.string().notRequired(),
+      uuid: yup.string().notRequired(),
+      sku: yup.string().notRequired(),
+      virtual: yup.boolean().notRequired(),
+    })
+    .notRequired(),
+  license_key: yup.string().notRequired(),
+  username: yup.string().notRequired(),
+  team: yup.string().notRequired(),
+});
+
 const getLicenseData = async (req, res) => {
   const filterValue = req.body;
   const db = supabase();
@@ -58,4 +113,54 @@ const getLicenseData = async (req, res) => {
   });
 };
 
-module.exports = { getLicenseData };
+const createLicenseData = async (req, res) => {
+  const data = req.body;
+  //validate data
+  try {
+    await licenseKeySchema.validate(data);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({
+      error: err.message,
+    });
+  }
+
+  const db = supabase();
+  const promise = db.from("license-key").insert(data).select("*");
+  console.log("data", data);
+  const { data: dataInsert, status, error, statusText } = await promise;
+  if (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
+  return res.status(200).json({
+    status,
+    statusText,
+    dataInsert,
+  });
+};
+
+const updateLicenseData = async (req, res) => {
+  const data = req.body;
+  const id = req.params.id;
+  //validate data
+  try {
+    await licenseKeySchema.validate(data);
+  } catch (err) {
+    return res.status(400).send(err.message);
+  }
+  const db = supabase();
+  const {
+    data: updateData,
+    error,
+    status,
+    statusText,
+  } = await db.from("license-key").update(data).eq("id", id).select("*");
+  if (error) {
+    return res.status(500).send(error.message);
+  }
+  return res.status(200).json({ status, statusText, updateData });
+};
+
+module.exports = { getLicenseData, updateLicenseData, createLicenseData };

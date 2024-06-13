@@ -10,8 +10,6 @@ const checkAuth = async (req, res, next) => {
 
   try {
     const { data, error } = await supabase().auth.getUser(token);
-    console.log("data", data);
-    console.log("error", error);
     if (error) {
       return res.status(401).json({
         error: "Unauthorized",
