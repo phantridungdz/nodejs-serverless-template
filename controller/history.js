@@ -152,8 +152,44 @@ const getMonthAnalytics = async (req, res) => {
   });
 };
 
+const getTotalMoneyByKey = async (key) => {
+  const db = supabase();
+  let dataPromise = db.rpc("get_total_money_by_key", {
+    key: key,
+  });
+  const { data, error } = await dataPromise;
+  return { data, error };
+}
+
+const getChartMoneyByKeys = async (key) => {
+  const db = supabase();
+  let dataPromise = db.rpc("get_daily_sum_history_money_by_key", {
+    key: key,
+  });
+  const { data, error } = await dataPromise;
+  return { data, error };
+}
+
+const getChartAndTotalMoneyByKeys = async (req,res) => {
+  if (!req.params.key) {
+    return res.status(400).send("Key is required");
+  }
+  const chartData = await getChartMoneyByKeys(req.params.key);
+  const totalData = await getTotalMoneyByKey(req.params.key);
+  if (chartData.error || totalData.error) {
+    return res.status(500).send({
+      error: chartData.error || totalData.error,
+    });
+  }
+  return res.status(200).json({
+    chartMoney: chartData.data,
+    totalMoney: totalData.data,
+  });
+}
+
 module.exports = {
   getHistoryData,
   getWeekAnalytics,
-  getMonthAnalytics
+  getMonthAnalytics,
+  getChartAndTotalMoneyByKeys
 };
