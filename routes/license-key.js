@@ -6,6 +6,6 @@ const router = express.Router();
 router.post("/", checkAuth, getLicenseData);
 router.put("/:id", checkAuth, updateLicenseData);
 router.post("/create", checkAuth, createLicenseData);
-router.delete("/", checkAuth, deleteLicenseData);
+router.delete("/:id", checkAuth, deleteLicenseData);
 
 module.exports = router;
