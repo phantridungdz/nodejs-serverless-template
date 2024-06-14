@@ -163,4 +163,23 @@ const updateLicenseData = async (req, res) => {
   return res.status(200).json({ status, statusText, updateData });
 };
 
-module.exports = { getLicenseData, updateLicenseData, createLicenseData };
+const deleteLicenseData = async (req, res) => {
+  const id = req.params.id;
+  const db = supabase();
+  const { data, error, status, statusText } = await db
+    .from("license-key")
+    .delete()
+    .eq("id", id)
+    .select("*");
+  if (error) {
+    return;
+  }
+  return res.status(200).json({ status, statusText, data });
+};
+
+module.exports = {
+  getLicenseData,
+  updateLicenseData,
+  createLicenseData,
+  deleteLicenseData,
+};
