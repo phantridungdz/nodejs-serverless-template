@@ -36,13 +36,22 @@ const getHistoryData = async (req, res) => {
     dataPromise = dataPromise.lte("created_at", filterValue.endDate);
     countPromise = countPromise.lte("created_at", filterValue.endDate);
   }
-  if (filterValue?.page) {
+  if (filterValue?.licenseKey) {
+    dataPromise = dataPromise.like(
+      "license_key",
+      `%${filterValue.licenseKey}%`
+    );
+    countPromise = countPromise.like(
+      "license_key",
+      `%${filterValue.licenseKey}%`
+    );
   }
 
-  const { data, error } = await dataPromise.range(
-    page * limit,
-    page * limit + limit - 1
-  );
+  const { data, error } = await dataPromise
+  // .range(
+  //   page * limit,
+  //   page * limit + limit - 1
+  // );
   const { data: count, error: countError } = await countPromise;
   console.log("count", count);
   if (error) {
