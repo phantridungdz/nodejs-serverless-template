@@ -1,5 +1,5 @@
 const { supabase } = require("../utils/supabase");
-
+const moment = require("moment");
 const limitPerRecord = 10;
 const pagePerRecord = 0;
 
@@ -16,6 +16,16 @@ const getAccountsData = async (req, res) => {
     .select("*")
     .order("created_at", { ascending: false });
   let countPromise = db.from("accounts").select("count");
+  if (filterValue?.licenseKey) {
+    dataPromise = dataPromise.like(
+      "license_key",
+      `%${filterValue.licenseKey}%`
+    );
+    countPromise = countPromise.like(
+      "license_key",
+      `%${filterValue.licenseKey}%`
+    );
+  }
 
   if (filterValue?.searchByUserName) {
     dataPromise = dataPromise.like(
@@ -27,6 +37,8 @@ const getAccountsData = async (req, res) => {
       `%${filterValue.searchByAccount}%`
     );
   }
+  // to timezone 0
+
   if (filterValue?.startDate) {
     dataPromise = dataPromise.gte("created_at", filterValue.startDate);
     countPromise = countPromise.gte("created_at", filterValue.startDate);
@@ -35,20 +47,36 @@ const getAccountsData = async (req, res) => {
     dataPromise = dataPromise.lte("created_at", filterValue.endDate);
     countPromise = countPromise.lte("created_at", filterValue.endDate);
   }
-  if (filterValue?.page) {
-  }
-
-  const { data, error } = await dataPromise.range(
-    page * limit,
-    page * limit + limit - 1
+  console.log("account_count_err", {
+    p_key: filterValue?.licenseKey ?? null,
+    p_date: filterValue?.startDate ? beginOfDay : null,
+  });
+  
+  const beginOfDay = moment(filterValue.startDate).startOf("day").toDate();
+  let { data: account_count, error: account_count_err } = await db.rpc(
+    "get_account_count_by_site",
+    {
+      p_key: filterValue?.licenseKey ?? null,
+      p_date: filterValue?.startDate ? beginOfDay : null,
+    }
   );
+  console.log("account_count", account_count);
+  const { data, error } = await dataPromise;
   const { data: count, error: countError } = await countPromise;
   console.log("count", count);
+
   if (error) {
     return res.status(500).send(error.message);
   }
+  if (countError) {
+    return res.status(500).send(countError.message);
+  }
+  if (account_count_err) {
+    return res.status(500).send(account_count_err.message);
+  }
   // console.log(data);
   return res.status(200).json({
+    account_count: account_count,
     data,
     metaData: {
       total: count[0].count,

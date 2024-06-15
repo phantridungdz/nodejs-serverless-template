@@ -6,15 +6,21 @@ const {
   getMonthAnalytics,
   getChartAndTotalMoneyByKeys,
   getMonthAnalyticsByKey,
-  getWeekAnalyticsByKey
+  getWeekAnalyticsByKey,
+  getWeekAnalyticsByTeam,
+  getMonthAnalyticsByTeam,
+  getChartMonthyMoneyByDate
 } = require("../controller/history");
 const router = express.Router();
 
 router.post("/", checkAuth, getHistoryData);
 router.get("/weekly-analysis", checkAuth, getWeekAnalytics);
-router.get("/monthly-analysis", checkAuth, getMonthAnalytics);
+router.get("/current-monthly-analysis", checkAuth, getMonthAnalytics);
+router.get("/monthly-analysis", checkAuth, getChartMonthyMoneyByDate);
 router.get("/weekly-analysis-key/:key", checkAuth, getWeekAnalyticsByKey);
 router.get("/monthly-analysis-key/:key", checkAuth, getMonthAnalyticsByKey);
 router.get("/money/:key", checkAuth, getChartAndTotalMoneyByKeys);
+router.get("/weekly-analysis-team/:team", checkAuth, getWeekAnalyticsByTeam);
+router.get("/monthly-analysis-team/:team", checkAuth, getMonthAnalyticsByTeam);
 
 module.exports = router;

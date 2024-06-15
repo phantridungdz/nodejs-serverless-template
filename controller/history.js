@@ -277,6 +277,117 @@ const getMonthAnalyticsByKey = async (req, res) => {
 }
 
 
+//analytics by team:string
+const getThisWeekDataByTeam = async (team) => {
+  const startDateThisWeek = moment().startOf("week").toDate();
+  const endDateThisWeek = moment().endOf("week").toDate();
+  //convert moment to Date
+  const db = supabase();
+  let dataPromise = db.rpc("get_range_history_money_by_team", {
+    team: team,
+    start_date: startDateThisWeek,
+    end_date: endDateThisWeek,
+  });
+
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  console.log("error", error);
+  return data;
+}
+
+const getLastWeekDataByTeam = async (team) => {
+  const startDateLastWeek = moment()
+    .subtract(1, "week")
+    .startOf("week")
+    .toDate();
+  const endDateLastWeek = moment().subtract(1, "week").endOf("week").toDate();
+  //convert moment to Date
+  const db = supabase();
+  let dataPromise = db.rpc("get_range_history_money_by_team", {
+    team: team,
+    start_date: startDateLastWeek,
+    end_date: endDateLastWeek,
+  });
+
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  console.log("error", error);
+  return data;
+}
+
+const getThisMonthDataByTeam = async (team) => {
+  const startDateThisMonth = moment().startOf("month").toDate();
+  const endDateThisMonth = moment().endOf("month").toDate();
+  //convert moment to Date
+  const db = supabase();
+  let dataPromise = db.rpc("get_range_history_money_by_team", {
+    team: team,
+    start_date: startDateThisMonth,
+    end_date: endDateThisMonth,
+  });
+
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  console.log("error", error);
+  return data;
+}
+
+const getLastMonthDataByTeam = async (team) => {
+  const startDateLastMonth = moment()
+    .subtract(1, "month")
+    .startOf("month")
+    .toDate();
+  const endDateLastMonth = moment()
+    .subtract(1, "month")
+    .endOf("month")
+    .toDate();
+  //convert moment to Date
+  const db = supabase();
+  let dataPromise = db.rpc("get_range_history_money_by_team", {
+    team: team,
+    start_date: startDateLastMonth,
+    end_date: endDateLastMonth,
+  });
+
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  console.log("error", error);
+  return data;
+}
+
+const getWeekAnalyticsByTeam = async (req, res) => {
+  if (!req.params.team) {
+    return res.status(400).send("Team is required");
+  }
+  const thisWeekData = await getThisWeekDataByTeam(req.params.team);
+  const lastWeekData = await getLastWeekDataByTeam(req.params.team);
+
+  const percentage = ((thisWeekData - lastWeekData) / lastWeekData) * 100;
+  console.log("percentage", percentage);
+  return res.status(200).json({
+    thisWeekData,
+    lastWeekData,
+    percentage,
+  });
+}
+
+const getMonthAnalyticsByTeam = async (req, res) => {
+  if (!req.params.team) {
+    return res.status(400).send("Team is required");
+  }
+  const thisMonthData = await getThisMonthDataByTeam(req.params.team);
+  const lastMonthData = await getLastMonthDataByTeam(req.params.team);
+
+  const percentage = ((thisMonthData - lastMonthData) / lastMonthData) * 100;
+  console.log("percentage", percentage);
+  return res.status(200).json({
+    thisMonthData,
+    lastMonthData,
+    percentage,
+  });
+}
+
+
 //chart and total money by key
 const getTotalMoneyByKey = async (key) => {
   const db = supabase();
@@ -286,7 +397,6 @@ const getTotalMoneyByKey = async (key) => {
   const { data, error } = await dataPromise;
   return { data, error };
 };
-
 const getChartMoneyByKeys = async (key) => {
   const db = supabase();
   let dataPromise = db.rpc("get_daily_sum_history_money_by_key", {
@@ -295,7 +405,6 @@ const getChartMoneyByKeys = async (key) => {
   const { data, error } = await dataPromise;
   return { data, error };
 };
-
 const getChartAndTotalMoneyByKeys = async (req, res) => {
   if (!req.params.key) {
     return res.status(400).send("Key is required");
@@ -313,6 +422,29 @@ const getChartAndTotalMoneyByKeys = async (req, res) => {
   });
 };
 
+const getChartMonthyMoneyByDate = async (req, res) => {
+  //convert date to first date of month
+  const date = req.query.date;
+  const startDate = moment(date).startOf("month").toDate();
+  const endDate = moment(date).endOf("month").toDate();
+  console.log("startDate", startDate);
+  console.log("endDate", endDate);
+  const db = supabase();
+  let dataPromise = db.rpc("get_daily_sum_history_money", {
+    start_date: startDate,
+    end_date: endDate,
+  });
+  const { data, error } = await dataPromise;
+  console.log("data", data);
+  if (error) {
+    return res.status(500).json({
+      error,
+    });
+  }
+  return res.status(200).json({
+    data,
+  });
+};
 
 
 module.exports = {
@@ -322,4 +454,7 @@ module.exports = {
   getChartAndTotalMoneyByKeys,
   getWeekAnalyticsByKey,
   getMonthAnalyticsByKey,
+  getWeekAnalyticsByTeam,
+  getMonthAnalyticsByTeam,
+  getChartMonthyMoneyByDate
 };
