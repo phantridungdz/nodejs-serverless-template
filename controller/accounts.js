@@ -47,10 +47,6 @@ const getAccountsData = async (req, res) => {
     dataPromise = dataPromise.lte("created_at", filterValue.endDate);
     countPromise = countPromise.lte("created_at", filterValue.endDate);
   }
-  console.log("account_count_err", {
-    p_key: filterValue?.licenseKey ?? null,
-    p_date: filterValue?.startDate ? beginOfDay : null,
-  });
   
   const beginOfDay = moment(filterValue.startDate).startOf("day").toDate();
   let { data: account_count, error: account_count_err } = await db.rpc(
