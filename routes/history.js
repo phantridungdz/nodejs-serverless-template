@@ -20,7 +20,7 @@ router.get("/monthly-analysis", checkAuth, getChartMonthyMoneyByDate);
 router.get("/weekly-analysis-key/:key", checkAuth, getWeekAnalyticsByKey);
 router.get("/monthly-analysis-key/:key", checkAuth, getMonthAnalyticsByKey);
 router.get("/money/:key", checkAuth, getChartAndTotalMoneyByKeys);
-router.get("/weekly-analysis-team/:team", checkAuth, getWeekAnalyticsByTeam);
-router.get("/monthly-analysis-team/:team", checkAuth, getMonthAnalyticsByTeam);
+router.get("/current-weekly-analysis-team/:team", checkAuth, getWeekAnalyticsByTeam);
+router.get("/current-monthly-analysis-team/:team", checkAuth, getMonthAnalyticsByTeam);
 
 module.exports = router;

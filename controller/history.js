@@ -434,6 +434,9 @@ const getChartAndTotalMoneyByKeys = async (req, res) => {
 const getChartMonthyMoneyByDate = async (req, res) => {
   //convert date to first date of month
   const date = req.query.date;
+  const key = req.query.key == null || req.query.key == "" ? null : req.query.key;
+  const teamName = req.query.teamName == null || req.query.teamName == "" ? null : req.query.teamName;
+
   const startDate = moment(date).startOf("month").toDate();
   const endDate = moment(date).endOf("month").toDate();
   console.log("startDate", startDate);
@@ -442,6 +445,8 @@ const getChartMonthyMoneyByDate = async (req, res) => {
   let dataPromise = db.rpc("get_daily_sum_history_money", {
     start_date: startDate,
     end_date: endDate,
+    key: key ,
+    teamname: teamName,
   });
   const { data, error } = await dataPromise;
   console.log("data", data);
