@@ -8,7 +8,20 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY, {
 const router = express.Router();
 
 router.post("/", async function (req, res) {
-  const { priceId, customerEmail } = req.body;
+  const { priceId, customerEmail, type } = req.body;
+
+  let telegramLink = "https://t.me/+l_3GRBqNFLszOTY9";
+  switch (type) {
+    case "diamond":
+      telegramLink = "https://t.me/+L4dQ7IRfKTNlNDA9";
+      break;
+    case "gold":
+      telegramLink = "https://t.me/+J9RlNeCaMXRlOTk1";
+      break;
+    case "silver":
+      telegramLink = "https://t.me/+Jif8H9cexEszNjI1";
+      break;
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -24,7 +37,9 @@ router.post("/", async function (req, res) {
       subscription_data: {
         trial_period_days: 1,
       },
-      success_url: `https://expoxtrading.info//success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `https://expoxtrading.info//success?session_id={CHECKOUT_SESSION_ID}&telegroup=${encodeURIComponent(
+        telegramLink
+      )}`,
       cancel_url: `https://expoxtrading.info//cancel`,
     });
 
