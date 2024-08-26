@@ -2,7 +2,7 @@ const express = require("express");
 const Stripe = require("stripe");
 
 const stripe = new Stripe(
-  "pk_live_51PWbZlRuEJoQBQYNQQH1QuTLAzMFO2ImTek6xLUGSso7BBZOgKBOs1WLJyecQGz5Ax4Bbilg7JZlhINvJIAoebhQ00AHVMAVPo",
+  "pk_live_51NmulXCulPb58xwdQot1SZJEpFGb55aCn7i2NqkuEpcz4qv9gb8uGmFLvnVHEKCLGHgUHIPBB3jk2GTOm6jcGiM2002Relxl15",
   {
     apiVersion: "2022-08-01",
   }
@@ -29,10 +29,10 @@ router.post("/", async function (req, res) {
       subscription_data: {
         trial_period_days: 1,
       },
-      success_url: `https://kelseyretail.us//success?session_id={CHECKOUT_SESSION_ID}&telegroup=${encodeURIComponent(
+      success_url: `https://expoxtrading.info//success?session_id={CHECKOUT_SESSION_ID}&telegroup=${encodeURIComponent(
         telegramLink
       )}`,
-      cancel_url: `https://kelseyretail.us//cancel`,
+      cancel_url: `https://expoxtrading.info//cancel`,
     });
 
     res.status(200).json({ sessionId: session.id });
