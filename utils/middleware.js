@@ -1,26 +1,36 @@
-const { supabase } = require('./supabase');
+const jwt = require("jsonwebtoken");
 
 const checkAuth = async (req, res, next) => {
   const token = req.headers["authorization"];
   if (!token) {
-    return res.status(401).json({
-      error: "No token provided",
-    });
+    return res.status(401).json({ error: "No token provided" });
   }
 
   try {
-    const { data, error } = await supabase().auth.getUser(token);
-    if (error) {
-      return res.status(401).json({
-        error: "Unauthorized",
-      });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Check if token is expired
+    if (decoded.exp * 1000 < Date.now()) {
+      return res.status(401).json({ error: "Token expired" });
     }
+
+    const db = req.app.locals.db;
+    const usersCollection = db.collection("users");
+
+    // Find user in MongoDB
+    const user = await usersCollection.findOne({ _id: decoded.userId });
+
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    req.user = user; // Attach user to request for further use
     next();
   } catch (error) {
-    console.log(error);
-    return res.status(401).json({
-      error: "Unauthorized",
-    });
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token expired" });
+    }
+    return res.status(401).json({ error: "Unauthorized" });
   }
 };
 
